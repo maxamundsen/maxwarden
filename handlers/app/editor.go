@@ -40,7 +40,13 @@ func EditorHandler(w http.ResponseWriter, r *http.Request) {
 		if editorType == EDITOR_TYPE_EDIT {
 			id := r.PathValue("id")
 
-			secret, _ = entries.FetchSecretFromID(identity.UserID, identity.MasterKey, id)
+			var fetchErr error
+			secret, fetchErr = entries.FetchSecretFromID(identity.UserID, identity.MasterKey, id)
+
+			if fetchErr != nil {
+				http.Redirect(w, r, "/app", http.StatusFound)
+				return
+			}
 		}
 	}
 
