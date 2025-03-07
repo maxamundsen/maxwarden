@@ -25,7 +25,7 @@ func VaultHandler(w http.ResponseWriter, r *http.Request) {
 					margin-bottom: $5;
 				}
 			`),
-			A(Href("/app/editor/add"), ButtonUI(Text("+ Add Item"))),
+			A(Href("/app/editor/add"), ButtonUI(Text("+ Add Credentials"))),
 		),
 		HxLoad("/app/vault-hx"),
 	).Render(w)

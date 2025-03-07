@@ -59,6 +59,13 @@ func Flex(n ...Node) Node {
 	)
 }
 
+func FlexLeftRight(n ...Node) Node {
+	return Div(
+		InlineStyle("$me { display: flex; align-items: center; flex-direction: row; gap: $3; justify-content: space-between; }"),
+		Group(n),
+	)
+}
+
 func CardNoPadding(body ...Node) Node {
 	return Div(
 		InlineStyle(`
@@ -109,6 +116,12 @@ func ToText(i interface{}) Node {
 }
 
 // TEXT
+func Heading(text string) Node {
+	return H1(
+		InlineStyle("$me { font-weight: bold; font-size: var(--text-2xl); letter-spacing: var(--tracking-tight); color: $color(black); }"),
+		Text(text),
+	)
+}
 func PageLink(location string, display Node, newPage bool) Node {
 	return A(
 		Href(location),

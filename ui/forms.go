@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"strconv"
+
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"
 )
@@ -73,4 +75,24 @@ func FormTextarea(children ...Node) Node {
 
 func FormLabel(children ...Node) Node {
 	return Label(InlineStyle("$me { color: $color(neutral-900); font-size: var(--text-sm); } "), Group(children))
+}
+
+func FormCheck(children ...Node) Node {
+	return Input(
+		InlineStyle(`
+			$me {
+				margin-left: $3;
+			}
+		`),
+		Type("checkbox"),
+		Group(children),
+	)
+}
+
+func FormSlider(min int, max int, children ...Node) Node {
+	return Input(
+		Type("range"),
+		Min(strconv.Itoa(min)),
+		Max(strconv.Itoa(max)),
+	)
 }

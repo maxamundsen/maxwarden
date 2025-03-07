@@ -72,10 +72,58 @@ func VaultHxHandler(w http.ResponseWriter, r *http.Request) {
 		func(entry entries.Secret) Node {
 			return Tr(
 				TdLeft(Text(entry.Description)),
-				TdLeft(Text(entry.Username)),
-				TdLeft(Text("********")),
-				TdLeft(PageLink(security.SanitizationPolicy.Sanitize(entry.URL), Text(entry.URL), false)),
-				TdCenter(A(Href("/app/editor/edit/" + entry.ID), ButtonUIOutline(Icon(ICON_PENCIL, 16)))),
+				TdLeft(
+					IfElse(entry.Username != "",
+						Flex(
+							P(Text(entry.Username)),
+							Span(
+								Title("Click to copy username"),
+								InlineStyle("$me { cursor: pointer; }"),
+								Icon(ICON_COPY, 16),
+							),
+							InlineScript(`
+								let btn = me("span", me());
+								let text = me("p", me());
+
+								btn.on("click", () => {
+									navigator.clipboard.writeText(text.innerHTML);
+								});
+							`),
+						),
+						Text("---"),
+					),
+				),
+				TdLeft(
+					IfElse(entry.Password != "",
+						Flex(
+							P(Text("•••••••")),
+							Input(Type("hidden"), Value(entry.Password)),
+							Span(
+								Class("copy"),
+								Title("Click to copy password"),
+								InlineStyle("$me { cursor: pointer; }"),
+								Icon(ICON_COPY, 16),
+							),
+							InlineScript(`
+								let copyBtn = me(".copy", me());
+								let password = me("input", me()).value;
+
+
+								copyBtn.on("click", () => {
+									navigator.clipboard.writeText(password);
+								});
+							`),
+						),
+						Text("---"),
+					),
+				),
+				TdLeft(
+					IfElse(entry.URL != "",
+						PageLink(security.SanitizationPolicy.Sanitize(entry.URL), Text(entry.URL), true),
+						Text("---"),
+					),
+				),
+				TdCenter(A(Href("/app/editor/edit/"+entry.ID), ButtonUIOutline(Icon(ICON_PENCIL, 16)))),
 			)
 		},
 		nil,

@@ -2,9 +2,7 @@ package app
 
 import (
 	"maxwarden/entries"
-	"maxwarden/security"
 	. "maxwarden/ui"
-	"maxwarden/users"
 
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"
@@ -56,6 +54,7 @@ func EditorHandler(w http.ResponseWriter, r *http.Request) {
 		url := r.FormValue("url")
 
 		secret = entries.Secret{
+			ID:          r.PathValue("id"),
 			Description: desc,
 			URL:         url,
 			Notes:       notes,
@@ -63,42 +62,26 @@ func EditorHandler(w http.ResponseWriter, r *http.Request) {
 			Username:    username,
 		}
 
-		user, _ := users.FetchById(identity.UserID)
-
-		// Get current secret store
-		secrets, _ := security.DecryptDataWithKey[[]entries.Secret](user.Data, identity.MasterKey)
-
-		if secrets == nil {
-			http.Redirect(w, r, "/app", http.StatusFound)
-			return
-		}
-
 		if editorType == EDITOR_TYPE_ADD {
-			secret.ID = security.RandBase58String(32)
-			*secrets = append(*secrets, secret)
+			entries.Add(identity.UserID, identity.MasterKey, secret)
 		} else {
-			secret.ID = r.PathValue("id")
-
-			// linear search and replace
-			for i, v := range *secrets {
-				if v.ID == secret.ID {
-					(*secrets)[i] = secret
-				}
-			}
+			entries.Update(identity.UserID, identity.MasterKey, secret)
 		}
-
-		// Serialize and encrypt modified store using master key
-		enc, _ := security.EncryptDataWithKey(secrets, identity.MasterKey)
-
-		user.Data = enc
-
-		users.Update(user)
 
 		http.Redirect(w, r, "/app", http.StatusFound)
 		return
 	}
 
 	AppLayout(title, *identity, session,
+		Modal(
+			"password_generator",
+			Text("Passkey Generator"),
+			HxLoad("/app/generator-hx"),
+			[]Node {
+				ButtonUIOutline(ModalCloser(), Text("Close")),
+			},
+		),
+
 		If(editorType == EDITOR_TYPE_EDIT,
 			Group{
 				Modal(
@@ -106,7 +89,7 @@ func EditorHandler(w http.ResponseWriter, r *http.Request) {
 					Text("Warning!"),
 					Text("Are you sure you want to delete this entry? This action cannot be undone."),
 					[]Node{
-						A(Href("/app/delete/" + secret.ID), ButtonUIDanger(Text("Delete"))),
+						A(Href("/app/delete/"+secret.ID), ButtonUIDanger(Text("Delete"))),
 						ButtonUIOutline(ModalCloser(), Text("Close")),
 					},
 				),
@@ -119,16 +102,41 @@ func EditorHandler(w http.ResponseWriter, r *http.Request) {
 		Form(
 			AutoComplete("off"),
 			Method("POST"),
+
 			FormLabel(Text("Description")),
-			FormInput(Type("text"), Name("description"), Value(secret.Description)),
+			FormInput(Type("text"), Name("description"), Value(secret.Description), AutoFocus(), Required()),
 			Br(),
 
 			FormLabel(Text("Username")),
 			FormInput(Type("text"), Name("un"), Value(secret.Username)),
 			Br(),
 
-			FormLabel(Text("Password")),
-			FormInput(Type("password"), Name("pas"), Value(secret.Password)),
+			Div(
+				FlexLeftRight(
+					FormLabel(Text("Password")),
+					ModalActuator("password_generator", ButtonUI(Type("button"), Text("Generate a secure password"))),
+				),
+				Br(),
+
+				FormInput(Class("password"), Type("password"), Name("pas"), Value(secret.Password)),
+				Br(),
+
+				FormLabel(Text("Show password?"), For("show")),
+				FormCheck(Class("checkbox"), ID("show")),
+				InlineScript(`
+					let check = me(".checkbox", me());
+					let passInput = me(".password", me());
+
+					check.on("click", () => {
+						if (passInput.type === "password") {
+							passInput.type = "text";
+						} else if (passInput.type === "text") {
+							passInput.type = "password";
+						}
+					});
+				`),
+			),
+
 			Br(),
 
 			FormLabel(Text("URL")),
@@ -143,6 +151,15 @@ func EditorHandler(w http.ResponseWriter, r *http.Request) {
 				InlineStyle("$me { display: flex; flex-direction: row; align-items: center; gap: $4; }"),
 				ButtonUISuccess(Text(btnLabel), Type("submit")),
 				A(Href("/app"), ButtonUIOutline(Text("Close"), Type("button"))),
+			),
+
+			If(editorType == EDITOR_TYPE_EDIT,
+				Div(
+					InlineStyle("$me { margin-top: $3; color: $color(neutral-400); font-size: var(--text-sm);}"),
+					Text("Last modified: "), FormatDateTime(secret.Modified),
+					Br(),
+					Text("Created: "), FormatDateTime(secret.Created),
+				),
 			),
 		),
 	).Render(w)

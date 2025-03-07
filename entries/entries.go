@@ -7,6 +7,7 @@ import (
 	"maxwarden/users"
 	"sort"
 	"strings"
+	"time"
 )
 
 type Secret struct {
@@ -16,6 +17,8 @@ type Secret struct {
 	Notes string
 	Username string
 	Password string
+	Created time.Time
+	Modified time.Time
 }
 
 type EntryFilter struct {
@@ -122,4 +125,54 @@ func DeleteSecret(userId int32, masterKey string, secretId string) error {
 	_, userErr := users.Update(user)
 
 	return userErr
+}
+
+func Update(userId int32, masterKey string, secret Secret) error {
+	user, _ := users.FetchById(userId)
+
+	secrets, _ := security.DecryptDataWithKey[[]Secret](user.Data, masterKey)
+	if secrets == nil {
+		return errors.New("user secrets are null")
+	}
+
+	secret.Modified = time.Now()
+
+	// linear search and replace
+	for i, v := range *secrets {
+		if v.ID == secret.ID {
+			created := (*secrets)[i].Created
+			secret.Created = created
+
+			(*secrets)[i] = secret
+		}
+	}
+
+	enc, _ := security.EncryptDataWithKey(secrets, masterKey)
+
+	user.Data = enc
+	_, updateErr := users.Update(user)
+
+	return updateErr
+}
+
+func Add(userId int32, masterKey string, secret Secret) error {
+	user, _ := users.FetchById(userId)
+
+	secrets, _ := security.DecryptDataWithKey[[]Secret](user.Data, masterKey)
+	if secrets == nil {
+		return errors.New("user secrets are null")
+	}
+
+	secret.ID = security.RandBase58String(32)
+	secret.Modified = time.Now()
+	secret.Created = time.Now()
+
+	*secrets = append(*secrets, secret)
+
+	enc, _ := security.EncryptDataWithKey(secrets, masterKey)
+
+	user.Data = enc
+	_, updateErr := users.Update(user)
+
+	return updateErr
 }
