@@ -52,7 +52,16 @@ func Modal(id string, header Node, body Node, closeElements []Node) Node {
 					font-weight: var(--font-weight-bold);
 				}
 			`),
-			header,
+
+			IfElse(header == nil,
+				InlineStyle(`
+					$me {
+						flex-direction: row-reverse;
+					}
+				`),
+				header,
+			),
+
 
 			Div(
 				Class("modal-close-el"),

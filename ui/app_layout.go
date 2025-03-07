@@ -122,7 +122,7 @@ func AppLayout(title string, identity auth.Identity, session map[string]interfac
 											Icon(ICON_USERS, 24),
 											Group{
 												navbarDropdownItem("My Profile", "/app/account", false),
-												navbarDropdownItem("Logout", "/auth/logout", false),
+												navbarDropdownItem("Lock Vault", "/auth/logout", false),
 											},
 										),
 									),

@@ -71,17 +71,24 @@ func VaultHxHandler(w http.ResponseWriter, r *http.Request) {
 		),
 		func(entry entries.Secret) Node {
 			return Tr(
-				TdLeft(Text(entry.Description)),
+				TdLeft(
+					Div(
+						InlineStyle("$me { overflow-x: auto; }"),
+						Text(entry.Description),
+					),
+				),
 				TdLeft(
 					IfElse(entry.Username != "",
-						Flex(
-							P(Text(entry.Username)),
-							Span(
-								Title("Click to copy username"),
-								InlineStyle("$me { cursor: pointer; }"),
-								Icon(ICON_COPY, 16),
-							),
-							InlineScript(`
+						Div(
+							InlineStyle("$me { overflow-x: auto; }"),
+							Flex(
+								Span(
+									Title("Click to copy username"),
+									InlineStyle("$me { cursor: pointer; }"),
+									Icon(ICON_COPY, 16),
+								),
+								P(Text(entry.Username)),
+								InlineScript(`
 								let btn = me("span", me());
 								let text = me("p", me());
 
@@ -89,6 +96,7 @@ func VaultHxHandler(w http.ResponseWriter, r *http.Request) {
 									navigator.clipboard.writeText(text.innerHTML);
 								});
 							`),
+							),
 						),
 						Text("---"),
 					),
@@ -96,14 +104,14 @@ func VaultHxHandler(w http.ResponseWriter, r *http.Request) {
 				TdLeft(
 					IfElse(entry.Password != "",
 						Flex(
-							P(Text("•••••••")),
-							Input(Type("hidden"), Value(entry.Password)),
 							Span(
 								Class("copy"),
 								Title("Click to copy password"),
 								InlineStyle("$me { cursor: pointer; }"),
 								Icon(ICON_COPY, 16),
 							),
+							P(Text("•••••••")),
+							Input(Type("hidden"), Value(entry.Password)),
 							InlineScript(`
 								let copyBtn = me(".copy", me());
 								let password = me("input", me()).value;
@@ -119,7 +127,10 @@ func VaultHxHandler(w http.ResponseWriter, r *http.Request) {
 				),
 				TdLeft(
 					IfElse(entry.URL != "",
-						PageLink(security.SanitizationPolicy.Sanitize(entry.URL), Text(entry.URL), true),
+						Div(
+							InlineStyle("$me { overflow-x: auto; }"),
+							PageLink(security.SanitizationPolicy.Sanitize(entry.URL), Text(entry.URL), true),
+						),
 						Text("---"),
 					),
 				),

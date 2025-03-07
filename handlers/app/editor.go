@@ -75,7 +75,7 @@ func EditorHandler(w http.ResponseWriter, r *http.Request) {
 	AppLayout(title, *identity, session,
 		Modal(
 			"password_generator",
-			Text("Passkey Generator"),
+			nil,
 			HxLoad("/app/generator-hx"),
 			[]Node {
 				ButtonUIOutline(ModalCloser(), Text("Close")),
@@ -121,13 +121,16 @@ func EditorHandler(w http.ResponseWriter, r *http.Request) {
 				FormInput(Class("password"), Type("password"), Name("pas"), Value(secret.Password)),
 				Br(),
 
-				FormLabel(Text("Show password?"), For("show")),
-				FormCheck(Class("checkbox"), ID("show")),
+				ButtonUIOutline(Class("passtoggle"),
+					Type("button"),
+					Flex(Icon(ICON_EYE, 24), Text(" Toggle password visibility")),
+				),
+
 				InlineScript(`
-					let check = me(".checkbox", me());
+					let toggle = me(".passtoggle", me());
 					let passInput = me(".password", me());
 
-					check.on("click", () => {
+					toggle.on("click", () => {
 						if (passInput.type === "password") {
 							passInput.type = "text";
 						} else if (passInput.type === "text") {
