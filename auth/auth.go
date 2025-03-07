@@ -12,6 +12,8 @@ import (
 	"strings"
 	"time"
 	"unicode"
+
+	"github.com/google/uuid"
 )
 
 const (
@@ -85,7 +87,7 @@ func Authenticate(username string, password string) (int32, string, bool) {
 			// THE FUNNY THING
 			// for range 2500000 {
 			// 	secrets = append(secrets, entries.Secret{
-			// 		ID: security.RandBase58String(32),
+			// 		ID: uuid.New().String()
 			// 		Description: "some website",
 			// 		URL: "https://example.com",
 			// 		Notes: "test notes something here i like writing notes lalalalala test test",

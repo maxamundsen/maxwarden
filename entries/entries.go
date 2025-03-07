@@ -8,6 +8,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Secret struct {
@@ -163,7 +165,7 @@ func Add(userId int32, masterKey string, secret Secret) error {
 		return errors.New("user secrets are null")
 	}
 
-	secret.ID = security.RandBase58String(32)
+	secret.ID = uuid.New().String()
 	secret.Modified = time.Now()
 	secret.Created = time.Now()
 

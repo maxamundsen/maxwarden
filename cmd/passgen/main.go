@@ -4,6 +4,8 @@ import (
 	"maxwarden/entries"
 	"maxwarden/security"
 	"os"
+
+	"github.com/google/uuid"
 )
 
 func main() {
@@ -13,7 +15,7 @@ func main() {
 		testData := []entries.Secret{}
 
 		for range 10 {
-			dummyData := entries.Secret{ID: security.RandBase58String(32), Description: "Twitter / X.com", URL: "https://x.com", Notes: "2fa is enabled for this account.", Username: "@johntwitter", Password: "##CORRECT_HORSE_BATTERY_STAPLE_51"}
+			dummyData := entries.Secret{ID: uuid.New().String(), Description: "Twitter / X.com", URL: "https://x.com", Notes: "2fa is enabled for this account.", Username: "@johntwitter", Password: "##CORRECT_HORSE_BATTERY_STAPLE_51"}
 			testData = append(testData, dummyData)
 		}
 
