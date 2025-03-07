@@ -92,7 +92,7 @@ func LoginView(errorMsg string) Node {
 								margin-right: auto;
 								margin-left: auto;
 								width: 100%;
-								max-width: var(--container-sm);
+								max-width: var(--container-md);
 							}
 						}
 					`),
@@ -111,7 +111,7 @@ func LoginView(errorMsg string) Node {
 								margin-right: auto;
 								margin-left: auto;
 								width: 100%;
-								max-width: var(--container-sm);
+								max-width: var(--container-md);
 							}
 						}
 					`),
@@ -127,7 +127,7 @@ func LoginView(errorMsg string) Node {
 										margin-right: auto;
 										margin-left: auto;
 										width: 100%;
-										max-width: var(--container-sm);
+										max-width: var(--container-md);
 									}
 								}
 							`),
@@ -155,7 +155,7 @@ func LoginView(errorMsg string) Node {
 							Label(
 								InlineStyle("$me { display: block; font-size: var(--text-xs); font-weight: var(--font-weight-normal); color: $color(neutral-700);}"),
 								For("username"),
-								Text("Username"),
+								Text("User ID"),
 							),
 							Div(InlineStyle("$me { margin-top: $2; }"),
 								FormInput(Name("username"), Type("text"), AutoFocus(), Required()),
@@ -165,10 +165,22 @@ func LoginView(errorMsg string) Node {
 							Label(
 								InlineStyle("$me { margin-top: $5; display: block; font-size: var(--text-xs); font-weight: var(--font-weight-normal); color: $color(neutral-700);}"),
 								For("password"),
-								Text("Master Password"),
+								Text("Master Key"),
 							),
 							Div(InlineStyle("$me { margin-top: $2; }"),
-								FormInput(Name("password"), Type("password"), Required()),
+								FormInput(Name("password"), Type("password"), ID("password"), Required()),
+							),
+						),
+						Div(
+							InlineStyle("$me { margin-top: $2; }"),
+							Input(
+								ID("show_master"),
+								Type("checkbox"),
+							),
+							Label(
+								InlineStyle("$me { margin-left: $3; display: inline; font-size: var(--text-xs); font-weight: var(--font-weight-normal); color: $color(neutral-700);}"),
+								For("show_master"),
+								Text("Show Master Key"),
 							),
 						),
 						Div(
@@ -204,6 +216,17 @@ func LoginView(errorMsg string) Node {
 						InlineScript(`
 							let form = me();
 							let btn = me("button", me());
+
+							let check = me("#show_master");
+							let passInput = me("#password");
+
+							check.on("click", () => {
+								if (passInput.type === "password") {
+									passInput.type = "text";
+								} else {
+									passInput.type = "password";
+								}
+							});
 
 							form.on("submit", () => { btn.innerHTML = "Authenticating..."; });
 						`),
