@@ -146,7 +146,10 @@ func LoginView(errorMsg string) Node {
 									color: $color(deep-blue);
 								}
 							`),
-							Text("Secure Sign In"),
+							Div(
+								InlineStyle("$me { display: flex; flex-direction: row; align-items: center; gap: $4;}"),
+								Icon(ICON_LOCK_KEYHOLE, 24), Text("Secure Sign In"),
+							),
 						),
 						Div(
 							Label(
@@ -155,7 +158,7 @@ func LoginView(errorMsg string) Node {
 								Text("Username"),
 							),
 							Div(InlineStyle("$me { margin-top: $2; }"),
-								FormInput(Name("username"), Type("text"), Required()),
+								FormInput(Name("username"), Type("text"), AutoFocus(), Required()),
 							),
 						),
 						Div(
@@ -195,7 +198,7 @@ func LoginView(errorMsg string) Node {
 									}
 								`),
 								Type("submit"),
-								Text("Sign In"),
+								Text("Unlock Vault"),
 							),
 						),
 						InlineScript(`
