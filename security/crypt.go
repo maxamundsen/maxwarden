@@ -24,21 +24,21 @@ import (
 // Encoding Wrappers
 ////////////////////////////////
 
-func EncodeBase64(in string) string {
-	return base64.StdEncoding.EncodeToString([]byte(in))
+func EncodeBase64(in []byte) string {
+	return base64.StdEncoding.EncodeToString(in)
 }
 
-func DecodeBase64(in string) string {
+func DecodeBase64(in string) []byte {
 	out, _ := base64.RawStdEncoding.DecodeString(in)
-	return string(out)
+	return out
 }
 
-func EncodeBase58(in string) string {
-	return base58.Encode([]byte(in))
+func EncodeBase58(in []byte) string {
+	return base58.Encode(in)
 }
 
-func DecodeBase58(in string) string {
-	return string(base58.Decode(in))
+func DecodeBase58(in string) []byte {
+	return base58.Decode(in)
 }
 
 ////////////////////////////////

@@ -62,7 +62,7 @@ func PutSessionCookie(w http.ResponseWriter, r *http.Request, session map[string
 
 	httpCookie := &http.Cookie{
 		Name:     config.SESSION_COOKIE_NAME,
-		Value:    security.EncodeBase58(string(sessionData)),
+		Value:    security.EncodeBase58(sessionData),
 		HttpOnly: true,
 		Secure:   r.URL.Scheme == "https",
 		Path:     "/",

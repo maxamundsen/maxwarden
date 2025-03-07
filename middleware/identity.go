@@ -153,7 +153,7 @@ func PutIdentityCookie(w http.ResponseWriter, r *http.Request, identity *auth.Id
 
 	httpCookie := &http.Cookie{
 		Name:     config.IDENTITY_COOKIE_NAME,
-		Value:    security.EncodeBase58(string(identityData)),
+		Value:    security.EncodeBase58(identityData),
 		HttpOnly: true,
 		Secure:   r.URL.Scheme == "https",
 		Path:     "/",
