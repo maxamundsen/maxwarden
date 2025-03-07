@@ -15,7 +15,7 @@ func VaultHandler(w http.ResponseWriter, r *http.Request) {
 	identity := middleware.GetIdentity(r)
 	session := middleware.GetSession(r)
 
-	AppLayout("Credential Vault", *identity, session,
+	AppLayout("Vault", *identity, session,
 		Div(
 			InlineStyle(`
 				$me {

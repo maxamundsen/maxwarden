@@ -54,7 +54,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 func LoginView(errorMsg string) Node {
 	currentYear := time.Time.Year(time.Now())
 
-	return RootLayout("Login",
+	return RootLayout("Login | MaxWarden",
 		Body(
 			InlineStyle(`
 				$me {
