@@ -27,7 +27,7 @@ var NavGroups = []NavGroup{
 	{
 		Title: "Tools",
 		SubGroup: []NavGroup{
-			{SectionId: LAYOUT_SECTION_TOOLS, Title: "Passkey Generator", URL: "/app/generator"},
+			{SectionId: LAYOUT_SECTION_TOOLS, Title: "Generator", URL: "/app/generator"},
 		},
 	},
 }
