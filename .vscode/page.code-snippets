@@ -1,0 +1,30 @@
+{
+	"page": {
+		"prefix": "page",
+		"body": [
+			"package ${1:packagename}",
+			"",
+			"import (",
+    "	. \"maragu.dev/gomponents\"",
+    "	. \"maragu.dev/gomponents/html\"",
+    "	\"net/http\"",
+    "	\"maxwarden/middleware\"",
+    "	. \"maxwarden/handlers/app\"",
+			")",
+			"",
+			"// @Identity",
+			"// @Protected",
+			"// @CookieSession",
+			"func ${2:Name}Page(w http.ResponseWriter, r *http.Request) {",
+    "	identity := middleware.GetIdentity(r)",
+    "	func() Node {",
+    "		return AppLayout(\"Another Page\", *identity,",
+    "			P(Text(\"This is another test page\")),",
+    "		)",
+    "	}().Render(w)",
+			"}",
+			""
+		],
+		"description": "Page with middleware and a basic view."
+	}
+}

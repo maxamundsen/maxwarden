@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.page": "go",
+        "*.component": "go"
+    }
+}

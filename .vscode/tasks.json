@@ -1,0 +1,51 @@
+{
+    "version": "2.0.0",
+    "type": "shell",
+    "cwd": "${workspaceFolder}",
+    "tasks": [
+        {
+            "label": "Metagen: Build",
+            "command": "go",
+            "args": ["run", "./cmd/metagen", "--env=dev", "build"],
+            "group": "build",
+        },
+        {
+            "label": "Metagen: Migrate Up",
+            "command": "go",
+            "args": ["run", "./cmd/metagen", "--env=dev", "migrate", "up"],
+            "group": "build"
+        },
+        {
+            "label": "Metagen: Migrate Down",
+            "command": "go",
+            "args": ["run", "./cmd/metagen", "--env=dev", "migrate", "down"],
+            "group": "build"
+        },
+        {
+            "label": "Metagen: Migrate Goto",
+            "command": "go",
+            "args": ["run", "./cmd/metagen", "--env=dev", "migrate", "goto", "${input:migration-number-goto}"],
+            "group": "build"
+        },
+        {
+            "label": "Metagen: Migrate Create",
+            "command": "go",
+            "args": ["run", "./cmd/metagen", "--env=dev", "migrate", "create", "${input:migration-name}"],
+            "group": "build"
+        },
+    ],
+    "inputs": [
+        {
+            "id": "migration-name",
+            "description": "Enter Migration Name:",
+            "default": "",
+            "type": "promptString"
+        },
+        {
+            "id": "migration-number-goto",
+            "description": "Enter migration number to apply up to:",
+            "default": "",
+            "type": "promptString"
+        },
+    ]
+}
