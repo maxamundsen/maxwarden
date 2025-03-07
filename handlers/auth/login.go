@@ -147,7 +147,7 @@ func LoginView(errorMsg string) Node {
 								}
 							`),
 							Div(
-								InlineStyle("$me { display: flex; flex-direction: row; align-items: center; gap: $4;}"),
+								InlineStyle("$me { display: flex; flex-direction: row; align-items: center; gap: $2;}"),
 								Icon(ICON_LOCK_KEYHOLE, 24), Text("Secure Sign In"),
 							),
 						),
@@ -178,7 +178,7 @@ func LoginView(errorMsg string) Node {
 								Type("checkbox"),
 							),
 							Label(
-								InlineStyle("$me { margin-left: $3; display: inline; font-size: var(--text-xs); font-weight: var(--font-weight-normal); color: $color(neutral-700);}"),
+								InlineStyle("$me { margin-left: $2; display: inline; font-size: var(--text-xs); font-weight: var(--font-weight-normal); color: $color(neutral-700);}"),
 								For("show_master"),
 								Text("Show Master Key"),
 							),
