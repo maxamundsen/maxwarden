@@ -12,8 +12,6 @@ import (
 	"strings"
 	"time"
 	"unicode"
-
-	"github.com/google/uuid"
 )
 
 const (
