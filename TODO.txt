@@ -1,1 +1,3 @@
-Date created, date modified
+- Date created, date modified
+- autologout
+- passwd generator as hx component (modal in editor)
