@@ -13,11 +13,13 @@ ENV CGO_ENABLED=1
 ENV GOOS=linux
 
 RUN go build --ldflags '-linkmode=external -extldflags=-static' ./cmd/metagen
-RUN ./cmd/metagen --env=production build
+RUN chmod +x ./metagen
+RUN ./metagen --env=production build
 
 RUN go build --ldflags '-linkmode=external -extldflags=-static' ./cmd/server
+RUN chmod +x ./server
 
-FROM scratch
+FROM alpine:latest
 
 COPY --from=build /app/server /app/server
 COPY --from=build /app/wwwroot /app/wwwroot
