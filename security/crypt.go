@@ -11,12 +11,12 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"maxwarden/config"
 	"os"
+	"maxwarden/constants"
 
 	"github.com/btcsuite/btcutil/base58"
-
 	"github.com/minio/highwayhash"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -59,7 +59,7 @@ func SHA512_58(in string) string {
 }
 
 func HighwayHash58(in string) (string, error) {
-	key := []byte(config.DATA_HASH_KEY)
+	key := []byte(constants.DATA_HASH_KEY)
 
 	hasher, err := highwayhash.New(key)
 	if err != nil {
@@ -77,7 +77,7 @@ func HighwayHash58(in string) (string, error) {
 }
 
 func HighwayHash(in string) (string, error) {
-	key := []byte(config.DATA_HASH_KEY)
+	key := []byte(constants.DATA_HASH_KEY)
 
 	hasher, err := highwayhash.New(key)
 	if err != nil {
@@ -93,7 +93,7 @@ func HighwayHash(in string) (string, error) {
 }
 
 func QuickFileHash(filepath string) (string, error) {
-	key := []byte(config.DATA_HASH_KEY)
+	key := []byte(constants.DATA_HASH_KEY)
 
 	file, err := os.Open(filepath)
 	if err != nil {
@@ -196,17 +196,7 @@ func DecryptSecret(encryptedData []byte, passKey string) ([]byte, error) {
 	return decryptedData, nil
 }
 
-// Encrypt data using default private key
-func EncryptData[T any](data *T) ([]byte, error) {
-	return EncryptDataWithKey(data, config.GetConfig().IdentityPrivateKey)
-}
-
-// Decrypt data using default private key
-func DecryptData[T any](data []byte) (*T, error) {
-	return DecryptDataWithKey[T](data, config.GetConfig().IdentityPrivateKey)
-}
-
-func EncryptDataWithKey[T any](data *T, key string) ([]byte, error) {
+func EncryptData[T any](data *T, key string) ([]byte, error) {
 	// serialize
 	b := bytes.Buffer{}
 	e := gob.NewEncoder(&b)
@@ -224,7 +214,7 @@ func EncryptDataWithKey[T any](data *T, key string) ([]byte, error) {
 	return out, nil
 }
 
-func DecryptDataWithKey[T any](data []byte, key string) (*T, error) {
+func DecryptData[T any](data []byte, key string) (*T, error) {
 	dest := new(T)
 
 	secret, err := DecryptSecret(data, key)

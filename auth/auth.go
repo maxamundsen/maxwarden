@@ -4,7 +4,7 @@ import (
 	"crypto/rand"
 	"errors"
 	"math/big"
-	"maxwarden/config"
+	"maxwarden/constants"
 	"maxwarden/entries"
 	"maxwarden/security"
 	"maxwarden/users"
@@ -28,7 +28,7 @@ type Identity struct {
 }
 
 func NewIdentity(userid int32, securityStamp string, masterKey string, rememberMe bool) *Identity {
-	expirationDuration := time.Duration(time.Hour * 24 * time.Duration(config.IDENTITY_COOKIE_EXPIRY_DAYS))
+	expirationDuration := time.Duration(time.Hour * 24 * time.Duration(constants.IDENTITY_COOKIE_EXPIRY_DAYS))
 	expiration := time.Now().Add(expirationDuration)
 
 	// hash password input
@@ -63,7 +63,7 @@ func Authenticate(username string, password string) (int32, string, bool) {
 
 	user, userErr := users.FetchByUsername(username)
 
-	if userErr != nil || user.FailedAttempts > int32(config.MAX_LOGIN_ATTEMPTS) {
+	if userErr != nil || user.FailedAttempts > int32(constants.MAX_LOGIN_ATTEMPTS) {
 		// set user password to dummy password to keep timing consistent when validating password
 		user.Password = "$2a$14$KW5OO1wZqGGq3SrpBFj0Oema5DG8Ph7lZJvq0ECkkYBpNFom6b9vO"
 		security.ComparePasswords(password, user.Password)
@@ -95,7 +95,7 @@ func Authenticate(username string, password string) (int32, string, bool) {
 			// }
 
 			mk := security.SHA512_58(password)
-			user.Data, _ = security.EncryptDataWithKey(&secrets, mk)
+			user.Data, _ = security.EncryptData(&secrets, mk)
 		}
 
 		users.Update(user)
@@ -109,8 +109,8 @@ func CheckPasswordCriteria(password string) error {
 		return errors.New("Password cannot be blank.")
 	}
 
-	if len(password) < config.PASSWORD_MIN_LENGTH {
-		return errors.New("Password must be at least " + strconv.Itoa(config.PASSWORD_MIN_LENGTH) + " characters long.")
+	if len(password) < constants.PASSWORD_MIN_LENGTH {
+		return errors.New("Password must be at least " + strconv.Itoa(constants.PASSWORD_MIN_LENGTH) + " characters long.")
 	}
 
 	uppercaseCount := 0
@@ -136,20 +136,20 @@ func CheckPasswordCriteria(password string) error {
 		}
 	}
 
-	if uppercaseCount < config.PASSWORD_REQUIRED_UPPERCASE {
-		return errors.New("Password must contain at least " + strconv.Itoa(config.PASSWORD_REQUIRED_UPPERCASE) + " uppercase character(s).")
+	if uppercaseCount < constants.PASSWORD_REQUIRED_UPPERCASE {
+		return errors.New("Password must contain at least " + strconv.Itoa(constants.PASSWORD_REQUIRED_UPPERCASE) + " uppercase character(s).")
 	}
 
-	if lowercaseCount < config.PASSWORD_REQUIRED_LOWERCASE {
-		return errors.New("Password must contain at least " + strconv.Itoa(config.PASSWORD_REQUIRED_LOWERCASE) + " lowercase character(s).")
+	if lowercaseCount < constants.PASSWORD_REQUIRED_LOWERCASE {
+		return errors.New("Password must contain at least " + strconv.Itoa(constants.PASSWORD_REQUIRED_LOWERCASE) + " lowercase character(s).")
 	}
 
-	if numberCount < config.PASSWORD_REQUIRED_NUMBERS {
-		return errors.New("Password must contain at least " + strconv.Itoa(config.PASSWORD_REQUIRED_NUMBERS) + " number(s).")
+	if numberCount < constants.PASSWORD_REQUIRED_NUMBERS {
+		return errors.New("Password must contain at least " + strconv.Itoa(constants.PASSWORD_REQUIRED_NUMBERS) + " number(s).")
 	}
 
-	if symbolCount < config.PASSWORD_REQUIRED_SYMBOLS {
-		return errors.New("Password must contain at least " + strconv.Itoa(config.PASSWORD_REQUIRED_SYMBOLS) + " symbol(s).")
+	if symbolCount < constants.PASSWORD_REQUIRED_SYMBOLS {
+		return errors.New("Password must contain at least " + strconv.Itoa(constants.PASSWORD_REQUIRED_SYMBOLS) + " symbol(s).")
 	}
 
 	return nil

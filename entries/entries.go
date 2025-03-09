@@ -44,7 +44,7 @@ func Filter(f EntryFilter) ([]Secret, error) {
 	user, _ := users.FetchById(f.UserId)
 
 	// we need to do the rest in memory because the data is encrypted, so we need to decrypt the data
-	secrets, decErr := security.DecryptDataWithKey[[]Secret](user.Data, f.MasterKey)
+	secrets, decErr := security.DecryptData[[]Secret](user.Data, f.MasterKey)
 	if decErr != nil {
 		return nil, decErr
 	}
@@ -83,7 +83,7 @@ func Filter(f EntryFilter) ([]Secret, error) {
 func FetchSecretFromID(userId int32, masterKey string, secretId string) (Secret, error) {
 	user, _ := users.FetchById(userId)
 
-	secrets, decErr := security.DecryptDataWithKey[[]Secret](user.Data, masterKey)
+	secrets, decErr := security.DecryptData[[]Secret](user.Data, masterKey)
 	if decErr != nil {
 		return Secret{}, decErr
 	}
@@ -104,7 +104,7 @@ func FetchSecretFromID(userId int32, masterKey string, secretId string) (Secret,
 func DeleteSecret(userId int32, masterKey string, secretId string) error {
 	user, _ := users.FetchById(userId)
 
-	secrets, decErr := security.DecryptDataWithKey[[]Secret](user.Data, masterKey)
+	secrets, decErr := security.DecryptData[[]Secret](user.Data, masterKey)
 	if decErr != nil {
 		return decErr
 	}
@@ -121,7 +121,7 @@ func DeleteSecret(userId int32, masterKey string, secretId string) error {
 		}
 	}
 
-	enc, _ := security.EncryptDataWithKey(&output, masterKey)
+	enc, _ := security.EncryptData(&output, masterKey)
 	user.Data = enc
 
 	_, userErr := users.Update(user)
@@ -132,7 +132,7 @@ func DeleteSecret(userId int32, masterKey string, secretId string) error {
 func Update(userId int32, masterKey string, secret Secret) error {
 	user, _ := users.FetchById(userId)
 
-	secrets, _ := security.DecryptDataWithKey[[]Secret](user.Data, masterKey)
+	secrets, _ := security.DecryptData[[]Secret](user.Data, masterKey)
 	if secrets == nil {
 		return errors.New("user secrets are null")
 	}
@@ -149,7 +149,7 @@ func Update(userId int32, masterKey string, secret Secret) error {
 		}
 	}
 
-	enc, _ := security.EncryptDataWithKey(secrets, masterKey)
+	enc, _ := security.EncryptData(secrets, masterKey)
 
 	user.Data = enc
 	_, updateErr := users.Update(user)
@@ -160,7 +160,7 @@ func Update(userId int32, masterKey string, secret Secret) error {
 func Add(userId int32, masterKey string, secret Secret) error {
 	user, _ := users.FetchById(userId)
 
-	secrets, _ := security.DecryptDataWithKey[[]Secret](user.Data, masterKey)
+	secrets, _ := security.DecryptData[[]Secret](user.Data, masterKey)
 	if secrets == nil {
 		return errors.New("user secrets are null")
 	}
@@ -171,7 +171,7 @@ func Add(userId int32, masterKey string, secret Secret) error {
 
 	*secrets = append(*secrets, secret)
 
-	enc, _ := security.EncryptDataWithKey(secrets, masterKey)
+	enc, _ := security.EncryptData(secrets, masterKey)
 
 	user.Data = enc
 	_, updateErr := users.Update(user)

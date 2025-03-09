@@ -20,7 +20,7 @@ func main() {
 		}
 
 		masterKey := security.SHA512_58(os.Args[1])
-		cryptData, _ := security.EncryptDataWithKey(&testData, masterKey)
+		cryptData, _ := security.EncryptData(&testData, masterKey)
 
 		println(passHash)
 		println(cryptData)

@@ -7,7 +7,7 @@ import (
 	. "maragu.dev/gomponents/html"
 
 	"maxwarden/auth"
-	"maxwarden/config"
+	"maxwarden/constants"
 	"maxwarden/middleware"
 
 	"log"
@@ -46,7 +46,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		defaultPath := config.IDENTITY_DEFAULT_PATH
+		defaultPath := constants.IDENTITY_DEFAULT_PATH
 		http.Redirect(w, r, defaultPath, http.StatusFound)
 	}
 }

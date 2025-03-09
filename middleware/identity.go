@@ -3,12 +3,13 @@ package middleware
 import (
 	"context"
 	"log"
-	"net/http"
-	"net/url"
 	"maxwarden/auth"
 	"maxwarden/config"
+	"maxwarden/constants"
 	"maxwarden/security"
 	"maxwarden/users"
+	"net/http"
+	"net/url"
 	"strings"
 	"time"
 )
@@ -16,10 +17,10 @@ import (
 type identityKey struct{}
 
 func LoadIdentity(h http.HandlerFunc, requireAuth bool) http.HandlerFunc {
-	loginPath := config.IDENTITY_LOGIN_PATH
-	logoutPath := config.IDENTITY_LOGOUT_PATH
-	defaultPath := config.IDENTITY_DEFAULT_PATH
-	redirect := config.IDENTITY_AUTH_REDIRECT
+	loginPath := constants.IDENTITY_LOGIN_PATH
+	logoutPath := constants.IDENTITY_LOGOUT_PATH
+	defaultPath := constants.IDENTITY_DEFAULT_PATH
+	redirect := constants.IDENTITY_AUTH_REDIRECT
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var identity *auth.Identity
@@ -35,7 +36,10 @@ func LoadIdentity(h http.HandlerFunc, requireAuth bool) http.HandlerFunc {
 
 			if len(splitToken) >= 2 {
 				token = splitToken[1]
-				identity, _ = security.DecryptData[auth.Identity]([]byte(security.DecodeBase58(token)))
+				identity, _ = security.DecryptData[auth.Identity](
+					[]byte(security.DecodeBase58(token)),
+					config.GetConfig().IdentityPrivateKey,
+				)
 			}
 
 			if identity == nil {
@@ -51,9 +55,12 @@ func LoadIdentity(h http.HandlerFunc, requireAuth bool) http.HandlerFunc {
 				return
 			}
 		} else {
-			identityCookie, err := r.Cookie(config.IDENTITY_COOKIE_NAME)
+			identityCookie, err := r.Cookie(constants.IDENTITY_COOKIE_NAME)
 			if err == nil {
-				identity, _ = security.DecryptData[auth.Identity]([]byte(security.DecodeBase58(identityCookie.Value)))
+				identity, _ = security.DecryptData[auth.Identity](
+					[]byte(security.DecodeBase58(identityCookie.Value)),
+					config.GetConfig().IdentityPrivateKey,
+				)
 			}
 
 			if identity == nil {
@@ -117,7 +124,7 @@ func PutIdentityCookie(w http.ResponseWriter, r *http.Request, identity *auth.Id
 	// calculate total bytes used by other cookies
 	var totalBytes int
 	for _, cookie := range cookies {
-		if cookie.Name == config.IDENTITY_COOKIE_NAME {
+		if cookie.Name == constants.IDENTITY_COOKIE_NAME {
 			continue
 		} else {
 			totalBytes += len(cookie.Value)
@@ -139,7 +146,7 @@ func PutIdentityCookie(w http.ResponseWriter, r *http.Request, identity *auth.Id
 	// The key should not be checked into VCS, and be regenerated if theft is
 	// suspected. Resetting the key will log *everyone* out, since no sessions
 	// or identities will validate.
-	identityData, err := security.EncryptData(identity)
+	identityData, err := security.EncryptData(identity, config.GetConfig().IdentityPrivateKey)
 	if err != nil {
 		return
 	}
@@ -152,7 +159,7 @@ func PutIdentityCookie(w http.ResponseWriter, r *http.Request, identity *auth.Id
 	}
 
 	httpCookie := &http.Cookie{
-		Name:     config.IDENTITY_COOKIE_NAME,
+		Name:     constants.IDENTITY_COOKIE_NAME,
 		Value:    security.EncodeBase58(identityData),
 		HttpOnly: true,
 		Secure:   r.URL.Scheme == "https",
@@ -167,7 +174,7 @@ func PutIdentityCookie(w http.ResponseWriter, r *http.Request, identity *auth.Id
 
 func DeleteIdentityCookie(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
-		Name:    config.IDENTITY_COOKIE_NAME,
+		Name:    constants.IDENTITY_COOKIE_NAME,
 		MaxAge:  -1,
 		Expires: time.Now().Add(-100 * time.Hour),
 		Path:    "/",
