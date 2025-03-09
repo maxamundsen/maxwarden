@@ -58,3 +58,6 @@ server
 *.sqlite
 *.db
 
+# jet generator
+tools/jet-2.12.0/jet
+tools/jet-2.12.0/jet.exe
