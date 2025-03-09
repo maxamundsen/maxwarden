@@ -12,18 +12,18 @@ func RootLayout(title string, children ...Node) Node {
 	// automatically invalidates cached css when file hash changes
 	css_hash, err := security.QuickFileHash("./wwwroot/css/style.css")
 	if err != nil {
-		return Text("Error hashing style.css")
+		return Text(err.Error())
 	}
 
 	metagen_css_hash, err := security.QuickFileHash("./wwwroot/css/style.metagen.css")
 	if err != nil {
-		return Text("Error hashing style.css")
+		return Text(err.Error())
 	}
 
 	// automatically invalidates cached js when file hash changes
 	js_hash, err := security.QuickFileHash("./wwwroot/js/index.js")
 	if err != nil {
-		return Text("Error hashing index.js")
+		return Text(err.Error())
 	}
 
 	return Doctype(
