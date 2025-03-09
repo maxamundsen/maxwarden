@@ -2,14 +2,13 @@
 
 FROM golang:1.24.1-alpine3.21 AS build
 
-RUN apk add clang lld musl-dev compiler-rt compiler-rt-static
+RUN apk add clang lld musl-dev compiler-rt
 
 RUN mkdir -pv /app
 COPY . /app
 WORKDIR /app
 
 ENV CC=clang
-ENV GOPATH=/app
 ENV CGO_ENABLED=1
 ENV GOOS=linux
 
