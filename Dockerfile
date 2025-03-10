@@ -19,10 +19,12 @@ RUN ./metagen --env=production build
 RUN go build --ldflags '-linkmode=external -extldflags=-static' ./cmd/server
 RUN chmod +x ./server
 
-FROM alpine:latest
+FROM scratch
 
 COPY --from=build /app/server /app/server
 COPY --from=build /app/wwwroot /app/wwwroot
 COPY --from=build /app/passwords.db /app/passwords.db
 
-CMD ["/app/server"]
+WORKDIR /app
+
+ENTRYPOINT ["./server"]
