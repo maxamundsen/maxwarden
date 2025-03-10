@@ -61,7 +61,7 @@ func Update[T any](qb *QueryBuilder, db *sqlx.DB, manualParams ...interface{}) (
 		return nil, buildErr
 	}
 
-	params = append(params, manualParams)
+	params = append(params, manualParams...)
 
 	return db.Exec(sql, params...)
 }
@@ -71,7 +71,7 @@ func Insert[T any](qb *QueryBuilder, db *sqlx.DB, manualParams ...interface{}) (
 	if buildErr != nil {
 		return nil, buildErr
 	}
-	params = append(params, manualParams)
+	params = append(params, manualParams...)
 
 	return db.Exec(sql, params...)
 }
@@ -82,7 +82,7 @@ func Delete[T any](qb *QueryBuilder, db *sqlx.DB, manualParams ...interface{}) (
 		return nil, buildErr
 	}
 
-	params = append(params, manualParams)
+	params = append(params, manualParams...)
 
 	return db.Exec(sql, params...)
 }
@@ -95,7 +95,7 @@ func Select[T any](qb *QueryBuilder, db *sqlx.DB, manualParams ...interface{}) (
 		return nil, buildErr
 	}
 
-	params = append(params, manualParams)
+	params = append(params, manualParams...)
 
 	err := db.Select(&entities, sql, params...)
 
@@ -112,7 +112,7 @@ func Get[T any](qb *QueryBuilder, db *sqlx.DB, manualParams ...interface{}) (T, 
 		return entity, buildErr
 	}
 
-	params = append(params, manualParams)
+	params = append(params, manualParams...)
 
 	err := db.Get(&entity, sql, params...)
 
