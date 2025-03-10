@@ -66,11 +66,6 @@ func CSSID(input string) string {
 	return "#" + input
 }
 
-// For some reason this isn't included in the base distribution
-func Template(children ...Node) Node {
-	return El("template", children...)
-}
-
 func Open() Node {
 	return Attr("open")
 }

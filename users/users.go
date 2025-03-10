@@ -2,60 +2,55 @@ package users
 
 import (
 	"database/sql"
-	"maxwarden/.jet/model"
 	"maxwarden/database"
-
-	. "maxwarden/.jet/table"
-
-	. "github.com/go-jet/jet/v2/sqlite"
 )
 
-func FetchById(id int32) (model.User, error) {
-	user := model.User{}
-
-	stmt := SELECT(
-		User.AllColumns,
-	).FROM(User).WHERE(
-		User.ID.EQ(Int32(int32(id))),
-	)
-
-	err := stmt.Query(database.DB, &user)
-
-	return user, err
+type User struct {
+	ID             int32  `db:"id"`
+	Username       string `db:"username"`
+	Email          string `db:"email"`
+	Firstname      string `db:"firstname"`
+	Lastname       string `db:"lastname"`
+	Password       string `db:"password"`
+	FailedAttempts int32  `db:"failed_attempts"`
+	SecurityStamp  string `db:"security_stamp"`
+	LastLogin      string `db:"last_login"`
+	Data           []byte `db:"data"`
 }
 
-func FetchByUsername(username string) (model.User, error) {
-	dest := model.User{}
+func FetchById(id int32) (User, error) {
+	qb := &database.QueryBuilder{}
+	qb.BaseSQL = "SELECT * FROM users u WHERE u.id = ?"
 
-	stmt := SELECT(
-		User.AllColumns,
-	).FROM(
-		User,
-	).WHERE(
-		User.Username.EQ(String(username)),
-	)
+	return database.Get[User](qb, database.DB, id)
+}
 
-	err := stmt.Query(database.DB, &dest)
-	return dest, err
+func FetchByUsername(username string) (User, error) {
+	qb := &database.QueryBuilder{}
+	qb.BaseSQL = "SELECT * FROM users u WHERE u.username = ?"
+
+	return database.Get[User](qb, database.DB, username)
 }
 
 func FetchSecurityStamp(userid int) (string, error) {
-	stamp := ""
+	qb := &database.QueryBuilder{}
+	qb.BaseSQL = "SELECT u.security_stamp FROM users u WHERE u.id = ?"
 
-	stmt := SELECT(
-		User.SecurityStamp,
-	).FROM(User).WHERE(
-		User.ID.EQ(Int32(int32(userid))),
-	)
-
-	err := stmt.Query(database.DB, &stamp)
-	return stamp, err
+	return database.Get[string](qb, database.DB, userid)
 }
 
-func Update(user model.User) (sql.Result, error) {
-	stmt := User.UPDATE(User.MutableColumns).
-		MODEL(user).
-		WHERE(User.ID.EQ(Int32(user.ID)))
+func Update(user User) (sql.Result, error) {
+	qb := &database.QueryBuilder{}
+	qb.BaseSQL = "UPDATE users"
 
-	return stmt.Exec(database.DB)
+	qb.Setters = []database.QuerySetter{
+		{Column: "failed_attempts", Parameter: user.FailedAttempts},
+		{Column: "data", Parameter: user.Data},
+	}
+
+	qb.Where = []database.QueryFilter{
+		{Column: "id", Parameter: user.ID},
+	}
+
+	return database.Update[User](qb, database.DB)
 }

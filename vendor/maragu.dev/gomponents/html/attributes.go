@@ -40,6 +40,10 @@ func Disabled() g.Node {
 	return g.Attr("disabled")
 }
 
+func Download(v string) g.Node {
+	return g.Attr("download", v)
+}
+
 func Draggable(v string) g.Node {
 	return g.Attr("draggable", v)
 }
@@ -133,12 +137,36 @@ func DataAttr(name, v string) g.Node {
 	return Data(name, v)
 }
 
+func SlotAttr(v string) g.Node {
+  return g.Attr("slot", v)
+}
+
 func For(v string) g.Node {
 	return g.Attr("for", v)
 }
 
+func FormAction(v string) g.Node {
+	return g.Attr("formaction", v)
+}
+
 func FormAttr(v string) g.Node {
 	return g.Attr("form", v)
+}
+
+func FormEncType(v string) g.Node {
+	return g.Attr("formenctype", v)
+}
+
+func FormMethod(v string) g.Node {
+	return g.Attr("formmethod", v)
+}
+
+func FormNoValidate() g.Node {
+	return g.Attr("formnovalidate")
+}
+
+func FormTarget(v string) g.Node {
+	return g.Attr("formtarget", v)
 }
 
 func Height(v string) g.Node {
@@ -209,12 +237,28 @@ func Placeholder(v string) g.Node {
 	return g.Attr("placeholder", v)
 }
 
+func Popover(value ...string) g.Node {
+	return g.Attr("popover", value...)
+}
+
+func PopoverTarget(v string) g.Node {
+	return g.Attr("popovertarget", v)
+}
+
+func PopoverTargetAction(v string) g.Node {
+	return g.Attr("popovertargetaction", v)
+}
+
 func Poster(v string) g.Node {
 	return g.Attr("poster", v)
 }
 
 func Preload(v string) g.Node {
 	return g.Attr("preload", v)
+}
+
+func ReferrerPolicy(v string) g.Node {
+	return g.Attr("referrerpolicy", v)
 }
 
 func Rel(v string) g.Node {

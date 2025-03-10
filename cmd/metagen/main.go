@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"os/exec"
 )
 
 var envtype int // set by user with cli flag
@@ -43,10 +42,6 @@ func main() {
 
 	for _, arg := range args {
 		switch arg {
-		case "build-all":
-			preBuild()
-			build()
-			goto End
 		case "build":
 			preBuild()
 			goto End
@@ -86,26 +81,4 @@ func preBuild() {
 	// code generation
 	generateInlineStyles()
 	generateDebugConfig()
-	generateJetModels()
-}
-
-func build() {
-	compileServer()
-}
-
-func compileServer() {
-	var out []byte
-	var err error
-
-	fmt.Printf("Compiling Server Binary")
-
-	if envtype == ENVIRONMENT_DEV {
-		// include extra flags for the GC
-		out, err = exec.Command("go", "build", "-gcflags=all=-N -l", "./cmd/server").CombinedOutput()
-	} else {
-		out, err = exec.Command("go", "build", "./cmd/server").CombinedOutput()
-	}
-
-	handleCmdOutput(out, err)
-	printStatus(true)
 }
